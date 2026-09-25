@@ -2,6 +2,10 @@
 <resources>
     <!-- Primary Cosmo Game Store Theme using Material 3 -->
     <style name="Theme.CosmoGames" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Remove System Action Bar & Title Bar -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
         <!-- Brand Colors -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorOnPrimary">@color/white</item>

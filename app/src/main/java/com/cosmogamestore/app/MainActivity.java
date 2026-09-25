@@ -86,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNav;
     private LinearLayout errorView;
     private Button btnRetryLoad;
-    private ImageView btnRefreshHeader;
 
     // In-App Download Progress Card
     private LinearLayout cardDownloadProgress;
@@ -269,7 +268,10 @@ public class MainActivity extends AppCompatActivity {
         bottomNav = findViewById(R.id.bottom_navigation);
         errorView = findViewById(R.id.error_view);
         btnRetryLoad = findViewById(R.id.btn_retry_load);
-        btnRefreshHeader = findViewById(R.id.btn_refresh_header);
+        Button btnErrorOpenLibrary = findViewById(R.id.btn_error_open_library);
+        if (btnErrorOpenLibrary != null) {
+            btnErrorOpenLibrary.setOnClickListener(v -> switchToLibraryTab());
+        }
 
         tabBrowseContainer = findViewById(R.id.tab_browse_container);
         fragmentContainer = findViewById(R.id.fragment_container);
@@ -290,26 +292,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnViewInLibrary.setOnClickListener(v -> switchToLibraryTab());
-
-        // Header refresh action
-        btnRefreshHeader.setOnClickListener(v -> {
-            if (currentTabId == R.id.nav_browse) {
-                errorView.setVisibility(View.GONE);
-                try {
-                    webView.reload();
-                } catch (Exception e) {
-                    recreateWebView();
-                }
-            } else if (currentTabId == R.id.nav_library) {
-                if (libraryFragment != null) {
-                    libraryFragment.scanLocalDownloads(true);
-                }
-            } else if (currentTabId == R.id.nav_updates) {
-                Toast.makeText(MainActivity.this, "Refreshed updates", Toast.LENGTH_SHORT).show();
-            } else if (currentTabId == R.id.nav_settings) {
-                Toast.makeText(MainActivity.this, "Settings up to date", Toast.LENGTH_SHORT).show();
-            }
-        });
 
         // Error retry action
         btnRetryLoad.setOnClickListener(v -> {
@@ -677,10 +659,20 @@ public class MainActivity extends AppCompatActivity {
             request.setDescription("Downloading " + fileName + " from Cosmo Game Store...");
             request.setMimeType("application/vnd.android.package-archive");
 
+            // Silent Background Downloading: Hide system download notifications and UI completely
             try {
-                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
             } catch (Exception e) {
-                // Ignore
+                try {
+                    request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                } catch (Exception ignored) {
+                }
+            }
+
+            // Suppress system Download UI so downloads run strictly in the background silently
+            try {
+                request.setVisibleInDownloadsUi(false);
+            } catch (Exception ignored) {
             }
 
             request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName);
@@ -831,15 +823,7 @@ public class MainActivity extends AppCompatActivity {
                                 Log.w(TAG, "Error updating db progress", e);
                             }
 
-                            // Update Notification Shade
-                            DownloadNotificationHelper.INSTANCE.showProgressNotification(
-                                    MainActivity.this,
-                                    downloadId,
-                                    gameTitle,
-                                    finalProgress,
-                                    bytesDownloaded,
-                                    totalBytes
-                            );
+                            // Silent background downloading: In-app UI and Room DB update smoothly without active notification popups
                         } else if (status == DownloadManager.STATUS_SUCCESSFUL || status == DownloadManager.STATUS_FAILED) {
                             break;
                         }

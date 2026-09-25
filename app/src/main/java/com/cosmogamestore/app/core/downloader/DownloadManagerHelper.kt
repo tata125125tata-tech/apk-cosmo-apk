@@ -61,7 +61,26 @@ class DownloadManagerHelper(private val context: Context) {
             setTitle(title)
             setDescription("Downloading $fileName from Cosmo Game Store...")
             setMimeType("application/vnd.android.package-archive")
-            setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+
+            // Hide system download notification completely or only notify when completed
+            try {
+                setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN)
+            } catch (e: Exception) {
+                try {
+                    setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                } catch (e2: Exception) {
+                    // Fallback
+                }
+            }
+
+            // Suppress system Download UI to maintain strictly silent background downloading
+            try {
+                @Suppress("DEPRECATION")
+                setVisibleInDownloadsUi(false)
+            } catch (e: Exception) {
+                Log.w(TAG, "Could not set setVisibleInDownloadsUi(false)", e)
+            }
+
             setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
 
             if (wifiOnly) {

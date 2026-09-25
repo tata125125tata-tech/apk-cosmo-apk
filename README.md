@@ -1,7 +1,7 @@
 # Cosmo Game Store
 
-[![Build & Release Debug APK](https://github.com/tata125125tata-tech/cosmo-store-apk/actions/workflows/build-apk.yml/badge.svg)](https://github.com/tata125125tata-tech/cosmo-store-apk/actions/workflows/build-apk.yml)
-[![GitHub Release](https://img.shields.io/github/v/release/tata125125tata-tech/cosmo-store-apk?color=blue&label=Latest%20Release)](https://github.com/tata125125tata-tech/cosmo-store-apk/releases)
+[![Build & Release Debug APK](https://github.com/tata125125tata-tech/apk-cosmo-apk/actions/workflows/build-apk.yml/badge.svg)](https://github.com/tata125125tata-tech/apk-cosmo-apk/actions/workflows/build-apk.yml)
+[![GitHub Release](https://img.shields.io/github/v/release/tata125125tata-tech/apk-cosmo-apk?color=blue&label=Latest%20Release)](https://github.com/tata125125tata-tech/apk-cosmo-apk/releases)
 
 An indie Android game store client featuring direct APK downloads, integrated game library, automatic installer, update tracking, and modern Clean Architecture.
 
@@ -12,9 +12,9 @@ An indie Android game store client featuring direct APK downloads, integrated ga
 Whenever code is pushed to `main` or a release is tagged, GitHub Actions automatically compiles and publishes a new debug APK to **GitHub Releases**.
 
 ### ⚡ One-Click Download:
-- **[👉 Download Latest CosmoGameStore-debug.apk](https://github.com/tata125125tata-tech/cosmo-store-apk/releases/latest/download/CosmoGameStore-debug.apk)** *(Direct APK download, no GitHub login required)*
-- **[📦 View All Releases & Versions](https://github.com/tata125125tata-tech/cosmo-store-apk/releases)**
-- **[🛠️ View GitHub Actions Artifacts](https://github.com/tata125125tata-tech/cosmo-store-apk/actions)**
+- **[👉 Download Latest CosmoGameStore-debug.apk](https://github.com/tata125125tata-tech/apk-cosmo-apk/releases/latest/download/CosmoGameStore-debug.apk)** *(Direct APK download, no GitHub login required)*
+- **[📦 View All Releases & Versions](https://github.com/tata125125tata-tech/apk-cosmo-apk/releases)**
+- **[🛠️ View GitHub Actions Artifacts](https://github.com/tata125125tata-tech/apk-cosmo-apk/actions)**
 
 ---
 
@@ -48,7 +48,7 @@ Ensure GitHub Actions has permission to publish releases:
 
 ### Manual Workflow Trigger:
 You can trigger a fresh APK build on-demand at any time:
-1. Go to **[Actions → Build & Release Debug APK](https://github.com/tata125125tata-tech/cosmo-store-apk/actions/workflows/build-apk.yml)**.
+1. Go to **[Actions → Build & Release Debug APK](https://github.com/tata125125tata-tech/apk-cosmo-apk/actions/workflows/build-apk.yml)**.
 2. Click **Run workflow** → select branch (`main`) → **Run workflow**.
 
 ---
@@ -63,7 +63,7 @@ git init
 git branch -M main
 
 # Add remote
-git remote add origin https://github.com/tata125125tata-tech/cosmo-store-apk.git
+git remote add origin https://github.com/tata125125tata-tech/apk-cosmo-apk.git
 
 # Stage and commit
 git add .

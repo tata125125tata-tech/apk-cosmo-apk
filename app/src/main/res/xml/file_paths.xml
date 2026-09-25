@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Public External Downloads Directory (where DownloadManager saves standard downloads) -->
+    <external-path
+        name="external_download"
+        path="Download/" />
+
+    <!-- Root of external storage (fallback if subfolder is used) -->
+    <external-path
+        name="external_storage_root"
+        path="." />
+
+    <!-- App-specific external files and download directories -->
+    <external-files-path
+        name="external_app_files"
+        path="." />
+    <external-files-path
+        name="external_app_downloads"
+        path="Download/" />
+
+    <!-- App internal cache and files directories -->
+    <cache-path
+        name="cache"
+        path="." />
+    <files-path
+        name="files"
+        path="." />
+</paths>

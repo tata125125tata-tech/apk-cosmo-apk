@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/bg_card"
+    android:orientation="vertical"
+    android:padding="14dp">
+
+    <!-- Top Row: App Icon + Titles + Action Badge -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <!-- Extracted Game Icon from APK -->
+        <ImageView
+            android:id="@+id/iv_game_icon"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="@drawable/bg_badge"
+            android:clipToOutline="true"
+            android:contentDescription="Game Icon"
+            android:padding="4dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_games" />
+
+        <!-- Title, Package Name, Version -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_game_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="Cosmo Space Racer" />
+
+            <TextView
+                android:id="@+id/tv_game_package"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:ellipsize="middle"
+                android:maxLines="1"
+                android:textColor="@color/text_muted"
+                android:textSize="12sp"
+                tools:text="com.cosmo.spaceracer • v1.2.0" />
+
+            <TextView
+                android:id="@+id/tv_game_size_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textColor="@color/secondary"
+                android:textSize="12sp"
+                tools:text="48.5 MB • Sep 23, 2026" />
+
+            <!-- In-Card Download Progress Indicator -->
+            <ProgressBar
+                android:id="@+id/pb_item_download_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_marginTop="6dp"
+                android:max="100"
+                android:progress="0"
+                android:progressBackgroundTint="@color/surface_stroke"
+                android:progressTint="@color/secondary"
+                android:visibility="gone" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:background="@color/surface_stroke" />
+
+    <!-- Action Buttons: Install & Delete -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <!-- File Location Hint -->
+        <TextView
+            android:id="@+id/tv_game_status"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="start"
+            android:maxLines="1"
+            android:text="Ready to Install"
+            android:textColor="@color/accent_green"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <!-- Delete Button -->
+        <Button
+            android:id="@+id/btn_delete_game"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:drawableStart="@drawable/ic_delete"
+            android:drawablePadding="4dp"
+            android:text="Delete"
+            android:textColor="@color/accent_rose"
+            android:textSize="13sp" />
+
+        <!-- Install Button -->
+        <Button
+            android:id="@+id/btn_install_game"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_button_gradient"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:text="Install"
+            android:textColor="@color/white"
+            android:textSize="13sp" />
+    </LinearLayout>
+</LinearLayout>

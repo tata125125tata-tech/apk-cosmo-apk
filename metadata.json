@@ -1,0 +1,8 @@
+{
+  "name": "Remix Cosmo Game Store",
+  "description": "Cosmo Games indie store client featuring direct APK downloads, auto-installer, game library, and update tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

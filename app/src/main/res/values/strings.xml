@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Cosmo Game Store</string>
+    <string name="nav_browse">Browse</string>
+    <string name="nav_library">My Library</string>
+    <string name="nav_updates">Updates</string>
+    <string name="nav_settings">Settings</string>
+    <string name="store_title">Cosmo Game Store</string>
+    <string name="unknown_sources_dialog_title">Install Permission Required</string>
+    <string name="unknown_sources_dialog_message">To install downloaded games directly, please allow Cosmo to install unknown apps in system settings.</string>
+</resources>

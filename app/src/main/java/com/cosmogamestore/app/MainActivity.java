@@ -56,7 +56,7 @@ import com.cosmogamestore.app.data.db.SearchHistoryEntity;
 import com.cosmogamestore.app.notification.DownloadNotificationHelper;
 import com.cosmogamestore.app.ui.library.LibraryFragment;
 import com.cosmogamestore.app.ui.settings.SettingsFragment;
-import com.cosmogamestore.app.ui.updates.UpdatesFragment;
+import com.cosmogamestore.app.ui.video.VideoTubeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.File;
@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Fragments
     private LibraryFragment libraryFragment;
-    private UpdatesFragment updatesFragment;
+    private VideoTubeFragment videoTubeFragment;
     private SettingsFragment settingsFragment;
 
     // Pending download parameters if waiting for storage permission
@@ -1120,10 +1120,10 @@ public class MainActivity extends AppCompatActivity {
                 }
                 showFragment(libraryFragment);
             } else if (itemId == R.id.nav_updates) {
-                if (updatesFragment == null) {
-                    updatesFragment = UpdatesFragment.Companion.newInstance();
+                if (videoTubeFragment == null) {
+                    videoTubeFragment = VideoTubeFragment.Companion.newInstance();
                 }
-                showFragment(updatesFragment);
+                showFragment(videoTubeFragment);
             } else if (itemId == R.id.nav_settings) {
                 if (settingsFragment == null) {
                     settingsFragment = SettingsFragment.Companion.newInstance();
@@ -1140,6 +1140,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void switchToLibraryTab() {
         bottomNav.setSelectedItemId(R.id.nav_library);
+    }
+
+    public void switchToVideoTubeTab() {
+        bottomNav.setSelectedItemId(R.id.nav_updates);
     }
 
     private void showBrowseTab() {

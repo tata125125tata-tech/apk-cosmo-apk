@@ -1,6 +1,5 @@
 package com.cosmogamestore.app.ui.library
 
-import android.content.Context
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -11,6 +10,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +20,9 @@ import com.cosmogamestore.app.R
 import com.cosmogamestore.app.data.ApkMetadataHelper
 import com.cosmogamestore.app.data.db.AppDatabase
 import com.cosmogamestore.app.data.db.DownloadedGameEntity
+import com.cosmogamestore.app.data.db.VideoEntity
+import com.cosmogamestore.app.data.repository.VideoRepository
+import com.cosmogamestore.app.ui.video.VideoPlayerActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -28,19 +31,39 @@ import java.io.File
 
 /**
  * LibraryFragment:
- * Displays downloaded and in-progress games with app icons extracted directly from the local APK files,
- * real-time download status, persistent metadata stored via Room Database, and Install/Delete actions.
+ * Dual-tab offline content hub managing downloaded APK games and offline cached videos.
  */
 class LibraryFragment : Fragment() {
 
+    private lateinit var tabBtnApks: TextView
+    private lateinit var tabBtnVideos: TextView
+    private lateinit var containerApks: View
+    private lateinit var containerVideos: View
+
+    // APK Games Tab Views
     private lateinit var rvGames: RecyclerView
-    private lateinit var emptyView: View
+    private lateinit var emptyGamesView: View
     private lateinit var tvLibraryCount: TextView
     private lateinit var btnScan: Button
     private lateinit var btnEmptyBrowse: Button
-    private lateinit var adapter: DownloadedGameAdapter
+    private lateinit var gameAdapter: DownloadedGameAdapter
 
+    // Videos Tab Views
+    private lateinit var rvVideos: RecyclerView
+    private lateinit var emptyVideosView: View
+    private lateinit var btnEmptyBrowseVideos: Button
+    private lateinit var videoAdapter: DownloadedVideoAdapter
+
+    private var activeTab: Int = TAB_APKS
     private val db by lazy { AppDatabase.getDatabase(requireContext()) }
+    private val videoRepository by lazy { VideoRepository.getInstance(requireContext()) }
+
+    companion object {
+        private const val TAB_APKS = 0
+        private const val TAB_VIDEOS = 1
+
+        fun newInstance() = LibraryFragment()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,8 +77,11 @@ class LibraryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         initViews(view)
-        setupRecyclerView()
+        setupGameRecyclerView()
+        setupVideoRecyclerView()
+        setupTabSwitching()
         observeGames()
+        observeVideos()
         scanLocalDownloads()
     }
 
@@ -65,11 +91,22 @@ class LibraryFragment : Fragment() {
     }
 
     private fun initViews(view: View) {
+        tabBtnApks = view.findViewById(R.id.tab_btn_apks)
+        tabBtnVideos = view.findViewById(R.id.tab_btn_videos)
+        containerApks = view.findViewById(R.id.container_apks)
+        containerVideos = view.findViewById(R.id.container_videos)
+
+        // APK Views
         rvGames = view.findViewById(R.id.rv_library_games)
-        emptyView = view.findViewById(R.id.library_empty_view)
+        emptyGamesView = view.findViewById(R.id.library_empty_view)
         tvLibraryCount = view.findViewById(R.id.tv_library_count)
         btnScan = view.findViewById(R.id.btn_scan_library)
         btnEmptyBrowse = view.findViewById(R.id.btn_empty_browse)
+
+        // Video Views
+        rvVideos = view.findViewById(R.id.rv_library_videos)
+        emptyVideosView = view.findViewById(R.id.library_videos_empty_view)
+        btnEmptyBrowseVideos = view.findViewById(R.id.btn_empty_browse_videos)
 
         btnScan.setOnClickListener {
             scanLocalDownloads(showToast = true)
@@ -78,10 +115,51 @@ class LibraryFragment : Fragment() {
         btnEmptyBrowse.setOnClickListener {
             (activity as? MainActivity)?.switchToBrowseTab()
         }
+
+        btnEmptyBrowseVideos.setOnClickListener {
+            (activity as? MainActivity)?.switchToVideoTubeTab()
+        }
     }
 
-    private fun setupRecyclerView() {
-        adapter = DownloadedGameAdapter(
+    private fun setupTabSwitching() {
+        tabBtnApks.setOnClickListener {
+            selectTab(TAB_APKS)
+        }
+
+        tabBtnVideos.setOnClickListener {
+            selectTab(TAB_VIDEOS)
+        }
+    }
+
+    private fun selectTab(tab: Int) {
+        activeTab = tab
+        val context = requireContext()
+
+        if (tab == TAB_APKS) {
+            tabBtnApks.setBackgroundResource(R.drawable.bg_badge)
+            tabBtnApks.setTextColor(ContextCompat.getColor(context, R.color.secondary))
+
+            tabBtnVideos.setBackgroundResource(0)
+            tabBtnVideos.setTextColor(ContextCompat.getColor(context, R.color.text_secondary))
+
+            containerApks.visibility = View.VISIBLE
+            containerVideos.visibility = View.GONE
+            btnScan.visibility = View.VISIBLE
+        } else {
+            tabBtnVideos.setBackgroundResource(R.drawable.bg_badge)
+            tabBtnVideos.setTextColor(ContextCompat.getColor(context, R.color.secondary))
+
+            tabBtnApks.setBackgroundResource(0)
+            tabBtnApks.setTextColor(ContextCompat.getColor(context, R.color.text_secondary))
+
+            containerApks.visibility = View.GONE
+            containerVideos.visibility = View.VISIBLE
+            btnScan.visibility = View.GONE
+        }
+    }
+
+    private fun setupGameRecyclerView() {
+        gameAdapter = DownloadedGameAdapter(
             context = requireContext(),
             onInstallClick = { game ->
                 val file = File(game.filePath)
@@ -92,7 +170,7 @@ class LibraryFragment : Fragment() {
                 }
             },
             onDeleteClick = { game ->
-                confirmDelete(game)
+                confirmDeleteGame(game)
             },
             onCancelClick = { game ->
                 (activity as? MainActivity)?.cancelActiveDownload(game.downloadId)
@@ -107,25 +185,64 @@ class LibraryFragment : Fragment() {
         )
 
         rvGames.layoutManager = LinearLayoutManager(requireContext())
-        rvGames.adapter = adapter
+        rvGames.adapter = gameAdapter
+    }
+
+    private fun setupVideoRecyclerView() {
+        videoAdapter = DownloadedVideoAdapter(
+            onPlayClick = { video ->
+                val intent = VideoPlayerActivity.createIntent(
+                    context = requireContext(),
+                    id = video.id,
+                    videoUrl = video.videoUrl,
+                    title = video.title,
+                    coverUrl = video.coverUrl,
+                    category = video.category,
+                    views = video.views,
+                    likes = video.likes
+                )
+                startActivity(intent)
+            },
+            onDeleteClick = { video ->
+                confirmDeleteVideo(video)
+            }
+        )
+
+        rvVideos.layoutManager = LinearLayoutManager(requireContext())
+        rvVideos.adapter = videoAdapter
     }
 
     private fun observeGames() {
         viewLifecycleOwner.lifecycleScope.launch {
             db.gameDao().getAllGamesFlow().collectLatest { games ->
-                adapter.submitList(games)
-                updateEmptyState(games)
+                gameAdapter.submitList(games)
+                updateGameEmptyState(games)
             }
         }
     }
 
-    private fun updateEmptyState(games: List<DownloadedGameEntity>) {
+    private fun observeVideos() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            videoRepository.getDownloadedVideosFlow().collectLatest { videos ->
+                videoAdapter.submitList(videos)
+                if (videos.isEmpty()) {
+                    emptyVideosView.visibility = View.VISIBLE
+                    rvVideos.visibility = View.GONE
+                } else {
+                    emptyVideosView.visibility = View.GONE
+                    rvVideos.visibility = View.VISIBLE
+                }
+            }
+        }
+    }
+
+    private fun updateGameEmptyState(games: List<DownloadedGameEntity>) {
         if (games.isEmpty()) {
-            emptyView.visibility = View.VISIBLE
+            emptyGamesView.visibility = View.VISIBLE
             rvGames.visibility = View.GONE
             tvLibraryCount.text = "0 Games in Library"
         } else {
-            emptyView.visibility = View.GONE
+            emptyGamesView.visibility = View.GONE
             rvGames.visibility = View.VISIBLE
             val downloadingCount = games.count { it.isDownloading }
             val completedCount = games.count { it.isCompleted }
@@ -142,10 +259,6 @@ class LibraryFragment : Fragment() {
         }
     }
 
-    /**
-     * Scans the system Downloads folder for any .apk files, extracts metadata and icons,
-     * and saves/synchronizes them in Room Database.
-     */
     fun scanLocalDownloads(showToast: Boolean = false) {
         viewLifecycleOwner.lifecycleScope.launch {
             val context = context ?: return@launch
@@ -162,7 +275,6 @@ class LibraryFragment : Fragment() {
                     }
                 }
 
-                // Clean up database entries for files that no longer exist on disk (only for completed items)
                 val existingInDb = db.gameDao().getAllGames()
                 for (record in existingInDb) {
                     if (record.isCompleted && !File(record.filePath).exists()) {
@@ -177,7 +289,7 @@ class LibraryFragment : Fragment() {
         }
     }
 
-    private fun confirmDelete(game: DownloadedGameEntity) {
+    private fun confirmDeleteGame(game: DownloadedGameEntity) {
         AlertDialog.Builder(requireContext())
             .setTitle("Delete Game")
             .setMessage("Are you sure you want to remove ${game.title} from library?")
@@ -208,7 +320,17 @@ class LibraryFragment : Fragment() {
         }
     }
 
-    companion object {
-        fun newInstance() = LibraryFragment()
+    private fun confirmDeleteVideo(video: VideoEntity) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Delete Offline Video")
+            .setMessage("Are you sure you want to delete \"${video.title}\" from offline storage?")
+            .setPositiveButton("Delete") { _, _ ->
+                viewLifecycleOwner.lifecycleScope.launch {
+                    videoRepository.deleteOfflineVideo(video)
+                    Toast.makeText(requireContext(), "Offline video deleted", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 }

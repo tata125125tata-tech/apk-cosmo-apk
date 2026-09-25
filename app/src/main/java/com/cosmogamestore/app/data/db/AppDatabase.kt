@@ -6,13 +6,14 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [DownloadedGameEntity::class, SearchHistoryEntity::class],
-    version = 3,
+    entities = [DownloadedGameEntity::class, SearchHistoryEntity::class, VideoEntity::class],
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun gameDao(): GameDao
     abstract fun searchHistoryDao(): SearchHistoryDao
+    abstract fun videoDao(): VideoDao
 
     companion object {
         @Volatile

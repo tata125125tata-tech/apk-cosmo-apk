@@ -18,7 +18,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="My Game Library"
+            android:text="My Library"
             android:textColor="@color/text_primary"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Locally stored APK packages with extracted game icons and direct package installation."
+            android:text="Manage locally saved APK games and offline video entertainment."
             android:textColor="@color/text_secondary"
             android:textSize="13sp" />
 
@@ -45,7 +45,7 @@
                 android:layout_weight="1"
                 android:text="Scanning local files..."
                 android:textColor="@color/secondary"
-                android:textSize="14sp"
+                android:textSize="13sp"
                 android:textStyle="bold" />
 
             <Button
@@ -58,75 +58,176 @@
         </LinearLayout>
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"
-        android:text="Downloaded Games"
-        android:textColor="@color/text_primary"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+    <!-- Dual Tab Selector (APKs vs Videos) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/bg_card"
+        android:orientation="horizontal"
+        android:padding="3dp">
 
+        <TextView
+            android:id="@+id/tab_btn_apks"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bg_badge"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="🎮 APK Games"
+            android:textColor="@color/secondary"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tab_btn_videos"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="🎬 Offline Videos"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Dual Container -->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <!-- RecyclerView of Downloaded Games -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_library_games"
+        <!-- TAB 1: APK GAMES -->
+        <FrameLayout
+            android:id="@+id/container_apks"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingBottom="16dp"
-            tools:listitem="@layout/item_downloaded_game" />
+            android:layout_height="match_parent">
 
-        <!-- Empty State View -->
-        <LinearLayout
-            android:id="@+id/library_empty_view"
+            <!-- RecyclerView of Downloaded Games -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_library_games"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingBottom="16dp"
+                tools:listitem="@layout/item_downloaded_game" />
+
+            <!-- Empty State View for Games -->
+            <LinearLayout
+                android:id="@+id/library_empty_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_card"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="24dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:contentDescription="Empty Library"
+                    android:src="@drawable/ic_games" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="No games in your library"
+                    android:textColor="@color/text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center"
+                    android:text="Visit the Browse tab to discover and download indie game APK packages."
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/btn_empty_browse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_button_gradient"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
+                    android:text="Browse Games"
+                    android:textColor="@color/white" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- TAB 2: OFFLINE VIDEOS -->
+        <FrameLayout
+            android:id="@+id/container_videos"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/bg_card"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="24dp"
             android:visibility="gone">
 
-            <ImageView
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:contentDescription="Empty Library"
-                android:src="@drawable/ic_games" />
+            <!-- RecyclerView of Downloaded Videos -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_library_videos"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingBottom="16dp"
+                tools:listitem="@layout/item_offline_video" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="No games in your library"
-                android:textColor="@color/text_primary"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
+            <!-- Empty State View for Videos -->
+            <LinearLayout
+                android:id="@+id/library_videos_empty_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_card"
                 android:gravity="center"
-                android:text="Visit the Browse tab to discover and download indie game APK packages."
-                android:textColor="@color/text_secondary"
-                android:textSize="13sp" />
+                android:orientation="vertical"
+                android:padding="24dp"
+                android:visibility="gone">
 
-            <Button
-                android:id="@+id/btn_empty_browse"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/bg_button_gradient"
-                android:paddingStart="24dp"
-                android:paddingEnd="24dp"
-                android:text="Browse Games"
-                android:textColor="@color/white" />
-        </LinearLayout>
+                <ImageView
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:contentDescription="No Offline Videos"
+                    android:src="@drawable/ic_nav_video"
+                    android:tint="@color/secondary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="No offline videos saved"
+                    android:textColor="@color/text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center"
+                    android:text="Download video trailers and tutorials in Video Tube to watch offline without an internet connection."
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/btn_empty_browse_videos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_button_gradient"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
+                    android:text="Explore Video Tube"
+                    android:textColor="@color/white" />
+            </LinearLayout>
+        </FrameLayout>
     </FrameLayout>
 </LinearLayout>

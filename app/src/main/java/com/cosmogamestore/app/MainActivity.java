@@ -56,7 +56,7 @@ import com.cosmogamestore.app.data.db.SearchHistoryEntity;
 import com.cosmogamestore.app.notification.DownloadNotificationHelper;
 import com.cosmogamestore.app.ui.library.LibraryFragment;
 import com.cosmogamestore.app.ui.settings.SettingsFragment;
-import com.cosmogamestore.app.ui.video.VideoTubeFragment;
+import com.cosmogamestore.app.ui.updates.UpdatesFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.File;
@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Fragments
     private LibraryFragment libraryFragment;
-    private VideoTubeFragment videoTubeFragment;
+    private UpdatesFragment updatesFragment;
     private SettingsFragment settingsFragment;
 
     // Pending download parameters if waiting for storage permission
@@ -211,6 +211,13 @@ public class MainActivity extends AppCompatActivity {
         boolean handledLink = handleIncomingIntent(getIntent());
         if (!handledLink) {
             loadStoreUrl(DEFAULT_STORE_URL);
+
+            int startPage = prefs.getInt(SettingsFragment.KEY_START_PAGE, SettingsFragment.START_PAGE_BROWSE);
+            if (startPage == SettingsFragment.START_PAGE_LIBRARY) {
+                bottomNav.setSelectedItemId(R.id.nav_library);
+            } else if (startPage == SettingsFragment.START_PAGE_UPDATES) {
+                bottomNav.setSelectedItemId(R.id.nav_updates);
+            }
         }
     }
 
@@ -1062,16 +1069,16 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        if (apkFile.getName().toLowerCase().endsWith(".xapk")) {
+            com.cosmogamestore.app.installer.PackageModel model = com.cosmogamestore.app.installer.XapkParser.parse(this, apkFile);
+            if (model != null) {
+                com.cosmogamestore.app.installer.InstallDialogHelper.showInstallDialog(this, model, null);
+                return;
+            }
+        }
+
         try {
-            String fileProviderAuthority = getApplicationContext().getPackageName() + ".fileprovider";
-            Uri apkContentUri = FileProvider.getUriForFile(this, fileProviderAuthority, apkFile);
-
-            Intent installIntent = new Intent(Intent.ACTION_VIEW);
-            installIntent.setDataAndType(apkContentUri, "application/vnd.android.package-archive");
-            installIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            installIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-            startActivity(installIntent);
+            com.cosmogamestore.app.installer.PackageInstallerHelper.installStandardApk(this, apkFile, null);
         } catch (Exception e) {
             Log.e(TAG, "Error invoking package installer", e);
             Toast.makeText(this, "Install failed: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
@@ -1116,17 +1123,17 @@ public class MainActivity extends AppCompatActivity {
                 showBrowseTab();
             } else if (itemId == R.id.nav_library) {
                 if (libraryFragment == null) {
-                    libraryFragment = LibraryFragment.Companion.newInstance();
+                    libraryFragment = LibraryFragment.newInstance();
                 }
                 showFragment(libraryFragment);
             } else if (itemId == R.id.nav_updates) {
-                if (videoTubeFragment == null) {
-                    videoTubeFragment = VideoTubeFragment.Companion.newInstance();
+                if (updatesFragment == null) {
+                    updatesFragment = UpdatesFragment.newInstance();
                 }
-                showFragment(videoTubeFragment);
+                showFragment(updatesFragment);
             } else if (itemId == R.id.nav_settings) {
                 if (settingsFragment == null) {
-                    settingsFragment = SettingsFragment.Companion.newInstance();
+                    settingsFragment = SettingsFragment.newInstance();
                 }
                 showFragment(settingsFragment);
             }
@@ -1142,7 +1149,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNav.setSelectedItemId(R.id.nav_library);
     }
 
-    public void switchToVideoTubeTab() {
+    public void switchToUpdatesTab() {
         bottomNav.setSelectedItemId(R.id.nav_updates);
     }
 

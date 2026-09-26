@@ -93,45 +93,10 @@
             android:name=".notification.DownloadActionReceiver"
             android:exported="false" />
 
-        <!-- Video Player Activity with Fullscreen & Deep Linking Intent Filters -->
-        <activity
-            android:name=".ui.video.VideoPlayerActivity"
-            android:exported="true"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
-            android:theme="@style/Theme.CosmoGames">
-            <!-- Custom scheme deep link: cosmo://video/{id} -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data
-                    android:scheme="cosmo"
-                    android:host="video" />
-            </intent-filter>
-
-            <!-- Web Link deep link: https://cosmo-game.pages.dev/video/{id} -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data
-                    android:scheme="https"
-                    android:host="cosmo-game.pages.dev"
-                    android:pathPrefix="/video" />
-            </intent-filter>
-
-            <!-- Cloudflare Worker direct link: https://bitter-voice-5ec8.vip125125vip.workers.dev/video/{id} -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data
-                    android:scheme="https"
-                    android:host="bitter-voice-5ec8.vip125125vip.workers.dev"
-                    android:pathPrefix="/video" />
-            </intent-filter>
-        </activity>
-
+        <!-- Receiver for PackageInstaller Session status updates (XAPK & Split APK installations) -->
+        <receiver
+            android:name=".installer.InstallStatusReceiver"
+            android:exported="false" />
     </application>
 
 </manifest>
